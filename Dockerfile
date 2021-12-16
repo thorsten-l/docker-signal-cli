@@ -17,15 +17,18 @@ RUN ./gradlew build
 RUN ./gradlew installDist
 
 FROM ubuntu:20.04
-RUN apt update && apt -y upgrade && apt -y install wget gnupg
-RUN wget https://download.bell-sw.com/pki/GPG-KEY-bellsoft && \
-    apt-key add GPG-KEY-bellsoft && \
-    echo "deb [arch=amd64] https://apt.bell-sw.com/ stable main" > /etc/apt/sources.list.d/bellsoft.list && \
-    apt update && apt install -y bellsoft-java17
-
-COPY --from=builder /builder/signal-cli/build/install/signal-cli /signal-cli
 
 WORKDIR /
+COPY --from=builder /builder/signal-cli/build/install/signal-cli /signal-cli
 COPY entrypoint.sh /
-RUN chmod 0755 /entrypoint.sh
+
+RUN apt update && apt -y upgrade && apt -y install wget gnupg && \
+    wget https://download.bell-sw.com/pki/GPG-KEY-bellsoft && \
+    apt-key add GPG-KEY-bellsoft && \
+    echo "deb [arch=amd64] https://apt.bell-sw.com/ stable main" > /etc/apt/sources.list.d/bellsoft.list && \
+    apt update && apt install -y bellsoft-java17 && \
+    chmod 0755 /entrypoint.sh
+
+VOLUME /root/.locale
+
 ENTRYPOINT [ "/entrypoint.sh" ]
