@@ -30,5 +30,6 @@ RUN apt update && apt -y upgrade && apt -y install wget gnupg && \
     chmod 0755 /entrypoint.sh
 
 VOLUME /root/.locale
+EXPOSE 7583
 
 ENTRYPOINT [ "/entrypoint.sh" ]
